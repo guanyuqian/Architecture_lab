@@ -17,34 +17,28 @@ import sys
 
 sys.modules[__name__] = Const()
 
-import constant
+import Constant
 
-# 裁剪图片偏移量
-# 宽度控制
+# 读取文件时每次读取的行数
+Constant.READ_LINE_NUM_PER_TIME = 10000
+# 输入的MIPS机器代码
+Constant.MIPS_MACHINE_CODE_PATH = './doc/sample.txt'
+Constant.MIPS_DIS_ASSEMBLY_PATH = './doc/disassembly.txt'
 
-constant.DEVICE_X_THREE = 575
-constant.WIDTH_PX = 350
-constant.GAP = (constant.DEVICE_X_THREE-constant.WIDTH_PX)/2
-constant.DEVICE_X_THREE-(2*constant.GAP)
-constant.DEVICE_X_THREE-(2*constant.GAP)
-constant.HEIGHT_PX = 950
-constant.DX0 = 380
-constant.DX1 = constant.DX0 + constant.DEVICE_X_THREE
-constant.DX2 = constant.DX1 + constant.DEVICE_X_THREE
-constant.DX3 = constant.DX2 + constant.DEVICE_X_THREE
-constant.DY0 = 650
-constant.DY1 = constant.DY0 + constant.HEIGHT_PX
-
-# 路径
-constant.ORIGINAL_SUCCESS_IMAGE_PATH = './original_images/success_images/'
-constant.ORIGINAL_FAIL_IMAGE_PATH = './original_images/failure_images/'
-constant.ORIGINAL_PREDICT_IMAGE_PATH = './original_images/check_images/'
-constant.SYNTHESIS_IMAGE_PATH = './synthesis_images/'
-constant.TRAIN_IMAGES_PATH_LIST = [constant.ORIGINAL_SUCCESS_IMAGE_PATH, constant.ORIGINAL_FAIL_IMAGE_PATH]
-constant.PREDICT_IMAGES_PATH_LIST = [constant.ORIGINAL_PREDICT_IMAGE_PATH]
-
-# 测试集
-constant.BEST_MODEL_PATH = 'net_no_validation_acc1.0'
-constant.LAST_MODEL_PATH = 'net_last.pkl'
-
-
+Constant.BASE_PC = 60
+Constant.CODE_BYTES = 4
+Constant.SPACE = ' '
+Constant.TAB = '\t'
+Constant.WRAP = '\n'
+Constant.DIVIDE = ', '
+Constant.NOP_CODE='00000000000000000000000000000000'
+Constant.BREAK_CODE='000000001101'
+Constant.FUNCTION_CODE_DICT = { \
+    '110000': 'ADD', '110001': 'SUB', '100001': 'MUL', '110010': 'AND', '110011': 'NOR', '110101': 'SLT', \
+    '101011': 'SW', '100011': 'LW', \
+    '000010': 'J', '000111': 'BGTZ', '000001': 'BLTZ', '000100': 'BEQ', \
+    '000000001000': 'JR', \
+    '000000100000': 'ADD', '000000100010': 'SUB', '011100000010': 'MUL', \
+    '000000100100': 'AND', '000000100111': 'NOR', '000000101010': 'SLT', \
+    '000000000000': 'SLL', '000000000010': 'SRL', '000000000011': 'SRA' \
+    }

@@ -1,0 +1,61 @@
+J			000010(fun code)+instr_index
+JR		000000( opcode )+rs(5)+0000000000+hint(5)+001000(fun code)
+BEQ		000100(fun code)+rs(5)+rt(5)+offset(16)
+BGTZ	000111(fun code)+rs(5)+00000+offset
+ADD		000000( opcode )+rs(5)+rt(5)+rd(5)+00000+100000(fun code)
+SUB		000000( opcode )+rs(5)+rt(5)+rd(5)+00000+100010(fun code)
+BREAK	000000( opcode )+code(20)+001101(fun code)
+SW		101011(fun code)+base(5)+rt(5)+offset(16)
+LW		100011(fun code)+base(5)+rt(5)+offset(16)
+SLL		000000( opcode )+00000+rt(5)+rd(5)+sa(5)+000000(fun code)
+SRL		000000( opcode )+00000+rt(5)+rd(5)+sa(5)+000010(fun code)
+SRA		000000( opcode )+00000+rt(5)+rd(5)+sa(5)+000011(fun code)
+NOP		000000( opcode )+00000+00000+00000+00000+000000(SLL fun code)
+
+
+
+C2
+ADD		000000( opcode )+rs(5)+rt(5)+rd(5)+00000+100000(fun code)
+SUB		000000( opcode )+rs(5)+rt(5)+rd(5)+00000+100010(fun code)
+MUL		011100( opcode )+rs(5)+rt(5)+rd(5)+00000+000010(fun code)
+AND 	000000( opcode )+rs(5)+rt(5)+rd(5)+00000+100000(fun code)
+NOR 	000000( opcode )+rs(5)+rt(5)+rd(5)+00000+100111(fun code)
+SLT		000000( opcode )+rs(5)+rt(5)+rd(5)+00000+101010(fun code)
+
+ADD		1+10000(fun code)+rs(5)+rt(5)+immediate(16)
+SUB		1+10001(fun code)+rs(5)+rt(5)+immediate(16)
+MUL		1+00001(fun code)+rs(5)+rt(5)+immediate(16)
+AND 	1+10010(fun code)+rs(5)+rt(5)+immediate(16)
+NOR 	1+10011(fun code)+rs(5)+rt(5)+immediate(16)
+SLT		1+10101(fun code)+rs(5)+rt(5)+immediate(16)
+
+
+register-immediate
+ADD		1+10000(fun code)+rs(5)+rt(5)+immediate(16)
+SUB		1+ 10001(fun code)+rs(5)+rt(5)+immediate(16)
+MUL		1+ 00001(fun code)+rs(5)+rt(5)+immediate(16)
+AND 	1+ 10010(fun code)+rs(5)+rt(5)+immediate(16)
+NOR 	1+ 10011(fun code)+rs(5)+rt(5)+immediate(16)
+SLT		1+ 10101(fun code)+rs(5)+rt(5)+immediate(16)
+----------------------------------------------------------------
+SW		1+ 01011(fun code)+base(5)+rt(5)+offset(16)
+LW		1+ 00011(fun code)+base(5)+rt(5)+offset(16)
+
+register-register
+J			000010(fun code)+instr_index
+JR		000000( opcode )+rs(5)+0000000000+hint(5)+001000(fun code)
+BEQ		000100(fun code)+rs(5)+rt(5)+offset(16)
+BGTZ	000111(fun code)+rs(5)+00000+offset(16)
+BLTZ	000001(fun code)+rs(5)+00000+offset(16)
+ADD		000000( opcode )+rs(5)+rt(5)+rd(5)+00000+100100(fun code)
+SUB		000000( opcode )+rs(5)+rt(5)+rd(5)+00000+100010(fun code)
+BREAK	000000( opcode )+code(20)+001101(fun code)
+SLL		000000( opcode )+00000+rt(5)+rd(5)+sa(5)+000000(fun code)
+SRL		000000( opcode )+00000+rt(5)+rd(5)+sa(5)+000010(fun code)
+SRA		000000( opcode )+00000+rt(5)+rd(5)+sa(5)+000011(fun code)
+NOP		000000( opcode )+00000+00000+00000+00000+000000(SLL fun code)
+-----------------------------------------------------------------------------------------
+MUL		011100( opcode )+rs(5)+rt(5)+rd(5)+00000+000010(fun code)
+AND 	000000( opcode )+rs(5)+rt(5)+rd(5)+00000+100100(fun code)
+NOR 	000000( opcode )+rs(5)+rt(5)+rd(5)+00000+100111(fun code)
+SLT		000000( opcode )+rs(5)+rt(5)+rd(5)+00000+101010(fun code)
