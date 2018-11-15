@@ -17,7 +17,7 @@ import sys
 
 sys.modules[__name__] = Const()
 
-import Constant
+import constant as Constant
 
 # 读取文件时每次读取的行数
 Constant.READ_LINE_NUM_PER_TIME = 10000
@@ -31,8 +31,8 @@ Constant.SPACE = ' '
 Constant.TAB = '\t'
 Constant.WRAP = '\n'
 Constant.DIVIDE = ', '
-Constant.NOP_CODE='00000000000000000000000000000000'
-Constant.BREAK_CODE='000000001101'
+Constant.NOP_CODE = '00000000000000000000000000000000'
+Constant.BREAK_CODE = '000000001101'
 Constant.FUNCTION_CODE_DICT = { \
     '110000': 'ADD', '110001': 'SUB', '100001': 'MUL', '110010': 'AND', '110011': 'NOR', '110101': 'SLT', \
     '101011': 'SW', '100011': 'LW', \
@@ -41,4 +41,8 @@ Constant.FUNCTION_CODE_DICT = { \
     '000000100000': 'ADD', '000000100010': 'SUB', '011100000010': 'MUL', \
     '000000100100': 'AND', '000000100111': 'NOR', '000000101010': 'SLT', \
     '000000000000': 'SLL', '000000000010': 'SRL', '000000000011': 'SRA' \
+    }
+
+Constant.OPERATOR_DICT = { \
+    'ADD':'+','SUB':'rd=rs-rt','MUL':'rd=rs*rt'
     }
