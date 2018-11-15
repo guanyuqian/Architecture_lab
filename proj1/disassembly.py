@@ -10,6 +10,8 @@ def dis_assembly():
     dis_assembly_list = []
     dis_assembly_txt = ''
     line_num = 0
+    # 内存数据的起始行数
+    mem_line_num=0
     break_line_num = 0
     while 1:
         lines = file.readlines(Constant.READ_LINE_NUM_PER_TIME)
@@ -20,16 +22,19 @@ def dis_assembly():
             if line[-1] != '\n': line += '\n'
             # 没有遇见break
             if break_line_num < 1:
+                mem_line_num+=1
                 dis_assembly_txt_operator, dis_assembly_txt_seg, break_line_num = dis_assembly_code(line, line_num)
                 dis_assembly_list.append([dis_assembly_txt_operator, dis_assembly_txt_seg])
                 dis_assembly_txt += device_machine_code(line) + Constant.TAB + \
                                     str(line_num * Constant.CODE_BYTES + Constant.BASE_PC) + Constant.TAB + \
-                                    dis_assembly_txt_operator + dis_assembly_txt_seg + Constant.WRAP
+                                    dis_assembly_txt_operator + Constant.SPACE + dis_assembly_txt_seg + Constant.WRAP
             else:
+                val=complement_code2int(line)
+                dis_assembly_list.append(val)
                 dis_assembly_txt += line[:-1] + str(line_num * Constant.CODE_BYTES + Constant.BASE_PC) + \
-                                    Constant.TAB + complement_code2int(line) + Constant.WRAP
+                                    Constant.TAB + val + Constant.WRAP
     file.close()
-    return dis_assembly_txt, dis_assembly_list
+    return dis_assembly_txt, dis_assembly_list,mem_line_num
 
 
 # break之前，进入。返回machine_code分析出来的反汇编语句和是否遇上了break
@@ -48,37 +53,37 @@ def dis_assembly_code(machine_code, line_num):
         dis_assembly_txt_operator += operator
         # the instr_index field shifted left 2 bits.
         if operator == 'J':
-            dis_assembly_txt_seg += Constant.SPACE + '#' + str(int(machine_code[16:32] + '00', 2))
+            dis_assembly_txt_seg += '#' + str(int(machine_code[16:32] + '00', 2))
         elif operator == 'BLTZ' or operator == 'BGTZ':
-            dis_assembly_txt_seg += Constant.SPACE + machine_code2register(machine_code[6:11]) + Constant.DIVIDE + \
+            dis_assembly_txt_seg += machine_code2register(machine_code[6:11]) + Constant.DIVIDE + \
                                     '#' + str(int(machine_code[16:32] + '00', 2))
         elif operator == 'SW' or operator == 'LW':
-            dis_assembly_txt_seg += Constant.SPACE + machine_code2register(machine_code[11:16]) + Constant.DIVIDE + \
+            dis_assembly_txt_seg += machine_code2register(machine_code[11:16]) + Constant.DIVIDE + \
                                     str(int(machine_code[16:32], 2)) + \
                                     '(' + machine_code2register(machine_code[6:11]) + ')'
         elif operator == 'BEQ':
-            dis_assembly_txt_seg += Constant.SPACE + machine_code2register(machine_code[6:11]) + Constant.DIVIDE + \
+            dis_assembly_txt_seg += machine_code2register(machine_code[6:11]) + Constant.DIVIDE + \
                                     machine_code2register(machine_code[11:16]) + Constant.DIVIDE \
                                     + '#' + str(int(machine_code[16:32] + '00', 2))
         else:
-            dis_assembly_txt_seg += Constant.SPACE + machine_code2register(machine_code[11:16]) + Constant.DIVIDE + \
+            dis_assembly_txt_seg += machine_code2register(machine_code[11:16]) + Constant.DIVIDE + \
                                     machine_code2register(machine_code[6:11]) + Constant.DIVIDE \
                                     + '#' + str(int(machine_code[16:32], 2))
     else:
         function_code = machine_code[:6] + machine_code[26:32]
         if not valid_function_code(function_code):
-            dis_assembly_txt_operator += Constant.SPACE + "匹配不到操作符"
+            dis_assembly_txt_operator += "匹配不到操作符"
         else:
             operator = Constant.FUNCTION_CODE_DICT[function_code]
             dis_assembly_txt_operator += operator
             if operator == 'JR':
-                dis_assembly_txt_seg += Constant.SPACE + machine_code2register(machine_code[6:11])
+                dis_assembly_txt_seg += machine_code2register(machine_code[6:11])
             elif operator == 'SLL' or operator == 'SRL' or operator == 'SRA':
-                dis_assembly_txt_seg += Constant.SPACE + machine_code2register(machine_code[16:21]) + Constant.DIVIDE + \
+                dis_assembly_txt_seg += machine_code2register(machine_code[16:21]) + Constant.DIVIDE + \
                                         machine_code2register(machine_code[11:16]) + Constant.DIVIDE \
                                         + '#' + str(int(machine_code[21:26], 2))
             else:
-                dis_assembly_txt_seg += Constant.SPACE + machine_code2register(machine_code[16:21]) + Constant.DIVIDE + \
+                dis_assembly_txt_seg += machine_code2register(machine_code[16:21]) + Constant.DIVIDE + \
                                         machine_code2register(machine_code[6:11]) + Constant.DIVIDE \
                                         + machine_code2register(machine_code[11:16])
     return dis_assembly_txt_operator, dis_assembly_txt_seg, break_line_num
