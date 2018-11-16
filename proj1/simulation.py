@@ -60,8 +60,7 @@ def simulate(dis_assembly_list, mem_line_num):
         simulate_seg = '--------------------\n' \
                        'Cycle:' + str(cycle) + Constant.TAB + PC_print + Constant.TAB + \
                        dis_assembly_list[PC][0] + parms_str + '\n\n' + \
-                       R2str(R) + mem2str(dis_assembly_list, mem_line_num)
-        print(simulate_seg)
+                       R2str(R) + mem2str(dis_assembly_list, mem_line_num)+'\n'
         PC = int(loc['newPC'])
         simulate_txt += simulate_seg
         if operator == 'BREAK':
@@ -93,4 +92,5 @@ def mem2str(mem, pc):
             pc += 1
         result = result[:-1] + '\n'
         line_index = 0
+    result = result[:-1] + '\n'
     return result
