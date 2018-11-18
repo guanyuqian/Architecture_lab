@@ -18,8 +18,10 @@ def main():
     dis_assembly_txt, dis_assembly_list,mem_line_num = dis_assembly()
     write_file(dis_assembly_txt, Constant.MIPS_DIS_ASSEMBLY_PATH)
     simulate_txt=simulate(dis_assembly_list,mem_line_num)
-    write_file(simulate_txt, Constant.MIPS_MACHINE_CODE_PATH)
+    write_file(simulate_txt, Constant.MIPS_SIMULATION_PATH)
 
 
 if __name__ == "__main__":
+    # print(Constant.SLR('-16', '2'))
+    print(Constant.SLL('1', '2'))
     main()

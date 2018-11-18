@@ -11,7 +11,7 @@ def dis_assembly():
     dis_assembly_txt = ''
     line_num = 0
     # 内存数据的起始行数
-    mem_line_num=0
+    mem_line_num = 0
     break_line_num = 0
     while 1:
         lines = file.readlines(Constant.READ_LINE_NUM_PER_TIME)
@@ -22,19 +22,22 @@ def dis_assembly():
             if line[-1] != '\n': line += '\n'
             # 没有遇见break
             if break_line_num < 1:
-                mem_line_num+=1
+                space = Constant.SPACE
+                mem_line_num += 1
                 dis_assembly_txt_operator, dis_assembly_txt_seg, break_line_num = dis_assembly_code(line, line_num)
                 dis_assembly_list.append([dis_assembly_txt_operator, dis_assembly_txt_seg])
+                if dis_assembly_txt_operator== 'BREAK' or dis_assembly_txt_operator== 'NOP':
+                    space=''
                 dis_assembly_txt += device_machine_code(line) + Constant.TAB + \
                                     str(line_num * Constant.CODE_BYTES + Constant.BASE_PC) + Constant.TAB + \
-                                    dis_assembly_txt_operator + Constant.SPACE + dis_assembly_txt_seg + Constant.WRAP
+                                    dis_assembly_txt_operator + space + dis_assembly_txt_seg + Constant.WRAP
             else:
-                val=complement_code2int(line)
+                val = complement_code2int(line)
                 dis_assembly_list.append(val)
                 dis_assembly_txt += line[:-1] + str(line_num * Constant.CODE_BYTES + Constant.BASE_PC) + \
                                     Constant.TAB + val + Constant.WRAP
     file.close()
-    return dis_assembly_txt, dis_assembly_list,mem_line_num
+    return dis_assembly_txt, dis_assembly_list, mem_line_num
 
 
 # break之前，进入。返回machine_code分析出来的反汇编语句和是否遇上了break
@@ -88,6 +91,16 @@ def dis_assembly_code(machine_code, line_num):
                                         + machine_code2register(machine_code[11:16])
     return dis_assembly_txt_operator, dis_assembly_txt_seg, break_line_num
 
+
+# 负数转为32位补码
+def int2complement_code_32bits(rs):
+    binary_code = bin(rs)
+    if rs<0:
+        supplement_count = 32 - len(binary_code) + 3
+        return '1' * supplement_count + binary_code[3:]
+    else:
+        supplement_count = 32 - len(binary_code) + 2
+        return '0' * supplement_count + binary_code[2:]
 
 # 补码转换成整数
 def complement_code2int(complement_code):
