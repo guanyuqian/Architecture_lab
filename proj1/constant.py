@@ -83,7 +83,7 @@ Constant.OPERATOR_DICT = {
     'SRA': 'rd=int(rs)>>int(rt)\nnewPC=PC+1',
     'NOP': 'newPC=PC+1', 'BREAK': 'newPC=PC+1',
     # 保留原来PC的最高四位
-    'J': 'newPC =(int(PC)&int(1006632960))+(r-64)/4', 'JR': 'newPC =(int(PC)&int(1006632960))+(r-64)/4',
+    'J': 'newPC =(int(PC)&int(1006632960))+(r-64)/4', 'JR': 'newPC =(r-64)/4',
     'BEQ': 'newPC=PC+1\nif(rd==int(rs)):newPC =newPC+(int(rt))/4',
     'BGTZ': 'newPC=PC+1\nif(r>0):newPC =newPC+(int(offset))/4',
     'BLTZ': 'newPC=PC+1\nif(r<0):newPC =newPC+(int(offset))/4',

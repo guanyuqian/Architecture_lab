@@ -60,6 +60,7 @@ def simulate(dis_assembly_list, mem_line_num):
         SLL=Constant.SLL
         SLR=Constant.SLR
         loc = locals()
+
         exec(get_exec_str(exec_str, use_parms, parms), loc)
         PC_print = str(PC * 4 + 64)
         simulate_seg = '--------------------\n' \
