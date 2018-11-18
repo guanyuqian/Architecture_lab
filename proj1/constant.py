@@ -82,7 +82,8 @@ Constant.OPERATOR_DICT = {
     'SLR': 'rd=SLR(rs,rt)\nnewPC=PC+1',
     'SRA': 'rd=int(rs)>>int(rt)\nnewPC=PC+1',
     'NOP': 'newPC=PC+1', 'BREAK': 'newPC=PC+1',
-    'J': 'newPC =(r-64)/4', 'JR': 'newPC =(r-64)/4',
+    # 保留原来PC的最高四位
+    'J': 'newPC =PC&1006632960+(r-64)/4', 'JR': 'newPC =PC&1006632960+(r-64)/4',
     'BEQ': 'newPC=PC+1\nif(rd==int(rs)):newPC =newPC+(int(rt))/4',
     'BGTZ': 'newPC=PC+1\nif(r>0):newPC =newPC+(int(offset))/4',
     'BLTZ': 'newPC=PC+1\nif(r<0):newPC =newPC+(int(offset))/4',
