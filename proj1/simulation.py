@@ -31,6 +31,9 @@ def get_exec_str(code, old_parm_list, new_parm_list):
     return code
 
 
+
+
+
 def simulate(dis_assembly_list, mem_line_num):
     PC = 0
     R = [0] * 32
@@ -54,7 +57,10 @@ def simulate(dis_assembly_list, mem_line_num):
             PC += 1
             continue
         exec_str = OPERATOR_DICT[operator]
+        SLL=Constant.SLL
+        SLR=Constant.SLR
         loc = locals()
+
         exec(get_exec_str(exec_str, use_parms, parms), loc)
         PC_print = str(PC * 4 + 64)
         simulate_seg = '--------------------\n' \
