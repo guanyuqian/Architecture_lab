@@ -5,8 +5,8 @@ import constant as Constant
 
 
 # 反汇编入口
-def dis_assembly():
-    file = open(Constant.MIPS_MACHINE_CODE_PATH)
+def dis_assembly(sample_file):
+    file = open(sample_file)
     dis_assembly_list = []
     dis_assembly_txt = ''
     line_num = 0
