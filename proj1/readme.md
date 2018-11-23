@@ -1,48 +1,48 @@
 proj1
 ===========================
 
-### ÏîÄ¿¼ò½é
+### é¡¹ç›®ç®€ä»‹
 ```
 Implement a MIPS simulator that can perform the following steps:
 	1. load a specified MIPS text file.
 	2. generate the assembly code.
 	3. perform instruction-by-instruction simulation of the generated assembly.
 ```
-* GITµØÖ·    £ºhttps://github.com/guanyuqian/Architecture_lab.git
-* ÏîÄ¿Ä¿Â¼   £º[guanyuqian/**Architecture_lab**/proj1](https://github.com/guanyuqian/Architecture_lab/tree/master/proj1)
+* GITåœ°å€    ï¼šhttps://github.com/guanyuqian/Architecture_lab.git
+* é¡¹ç›®ç›®å½•   ï¼š[guanyuqian/**Architecture_lab**/proj1](https://github.com/guanyuqian/Architecture_lab/tree/master/proj1)
 
-### »·¾³ÒÀÀµ
+### ç¯å¢ƒä¾èµ–
 ```
-Python3.5ÒÔÉÏ
+Python3.5ä»¥ä¸Š
 ```
 
-### ×¢ÒâÊÂÏî
+### æ³¨æ„äº‹é¡¹
 
-- ³ÌĞòµÄÊäÈëºÍÊä³ö¶¼ÊÇÓĞdefaultÖµ£¬¿ÉÒÔÊ¡ÂÔ²ÎÊıÖ±½ÓÔËĞĞ£¬Ä¬ÈÏÊäÈëºÍÊä³öÔÚÏîÄ¿Ïà¶ÔÂ·¾¶ÏÂ
-- ±¾³ÌĞòÔÚwindowsÆ½Ì¨¿ª·¢£¬Èç¹ûÔÚlinuxµÈ±ğµÄÆ½Ì¨ÏÂÃæÔËĞĞ£¬»òĞíÒª×¢ÒâÒ»ÏÂÖ¸¶¨ÎÄ¼şÊ±Â·¾¶µÄ¹æ·¶ÎÊÌâ
+- ç¨‹åºçš„è¾“å…¥å’Œè¾“å‡ºéƒ½æ˜¯æœ‰defaultå€¼ï¼Œå¯ä»¥çœç•¥å‚æ•°ç›´æ¥è¿è¡Œï¼Œé»˜è®¤è¾“å…¥å’Œè¾“å‡ºåœ¨é¡¹ç›®ç›¸å¯¹è·¯å¾„ä¸‹
+- æœ¬ç¨‹åºåœ¨windowså¹³å°å¼€å‘ï¼Œå¦‚æœåœ¨linuxç­‰åˆ«çš„å¹³å°ä¸‹é¢è¿è¡Œï¼Œæˆ–è®¸è¦æ³¨æ„ä¸€ä¸‹æŒ‡å®šæ–‡ä»¶æ—¶è·¯å¾„çš„è§„èŒƒé—®é¢˜
 
-### ÔËĞĞ³ÌĞò
+### è¿è¡Œç¨‹åº
 
 ```shell
 py main.py input_file_str output1_file_str output2_file_str
 ```
 
-- py¡ª¡ªpython
-- main.py¡ª¡ªMIPS·ÂÕæ³ÌĞòÈë¿Ú
-- input_file_str¡ª¡ª»úÆ÷´úÂëÊäÈëÎÄ¼ş£¨default :  **sample_int.txt** £©
-- output1_file_str¡ª¡ª½âÎö»úÆ÷´úÂëÉú³É»ã±àÊä³öÎÄ¼ş£¨default :  **disassembly_int.txt** £©
-- output2_file_str¡ª¡ª·ÂÕæÖ´ĞĞÊä³öÎÄ¼ş£¨default :  **simulation_int.txt** £©
+- pyâ€”â€”python
+- main.pyâ€”â€”MIPSä»¿çœŸç¨‹åºå…¥å£
+- input_file_strâ€”â€”æœºå™¨ä»£ç è¾“å…¥æ–‡ä»¶ï¼ˆdefault :  **sample_int.txt** ï¼‰
+- output1_file_strâ€”â€”è§£ææœºå™¨ä»£ç ç”Ÿæˆæ±‡ç¼–è¾“å‡ºæ–‡ä»¶ï¼ˆdefault :  **disassembly_int.txt** ï¼‰
+- output2_file_strâ€”â€”ä»¿çœŸæ‰§è¡Œè¾“å‡ºæ–‡ä»¶ï¼ˆdefault :  **simulation_int.txt** ï¼‰
 
-### ¿ª·¢ÎÄµµ
+### å¼€å‘æ–‡æ¡£
 
-| [ÎÄµµÂ·¾¶£º/proj1/doc](https://github.com/guanyuqian/Architecture_lab/tree/master/proj1/doc) |
-| :----------------------------------------------------------- |
-| [Fall2018.pdf](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/Fall2018.pdf) |
-| [code_analysis.txt](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/code_analysis.txt) |
-| [disassembly - ¸±±¾.txt](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/disassembly%20-%20%E5%89%AF%E6%9C%AC.txt) |
-| [disassembly.txt](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/disassembly.txt) |
-| [mips.pdf](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/mips.pdf) |
-| [projct details.docx](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/projct%20details.docx) |
-| [sample - ¸±±¾.txt](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/sample%20-%20%E5%89%AF%E6%9C%AC.txt) |
-| [sample.txt](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/sample.txt) |
-| [simulation.txt](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/simulation.txt) |
+ [æ–‡æ¡£è·¯å¾„ï¼š/proj1/doc](https://github.com/guanyuqian/Architecture_lab/tree/master/proj1/doc) 
+
+1. [Fall2018.pdf](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/Fall2018.pdf) 
+1. [code_analysis.txt](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/code_analysis.txt) 
+1. [disassembly - å‰¯æœ¬.txt](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/disassembly%20-%20%E5%89%AF%E6%9C%AC.txt) 
+1. [disassembly.txt](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/disassembly.txt) 
+1. [mips.pdf](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/mips.pdf) 
+1. [projct details.docx](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/projct%20details.docx) 
+1. [sample - å‰¯æœ¬.txt](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/sample%20-%20%E5%89%AF%E6%9C%AC.txt) 
+1. [sample.txt](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/sample.txt) 
+1. [simulation.txt](https://github.com/guanyuqian/Architecture_lab/blob/master/proj1/doc/simulation.txt) 
