@@ -52,8 +52,8 @@ import constant as Constant
 Constant.READ_LINE_NUM_PER_TIME = 10000
 # 输入的MIPS机器代码
 Constant.MIPS_MACHINE_CODE_PATH = 'sample_int.txt'
-Constant.MIPS_SIMULATION_PATH = 'disassembly_int.txt'
-Constant.MIPS_DIS_ASSEMBLY_PATH = 'simulation_int.txt'
+Constant.MIPS_SIMULATION_PATH = 'simulation_int.txt'
+Constant.MIPS_DIS_ASSEMBLY_PATH = 'disassembly_int.txt'
 
 Constant.LINE_DATA_COUNT = 8
 Constant.BASE_PC = 60

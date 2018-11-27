@@ -48,7 +48,7 @@ def simulate(dis_assembly_list, mem_line_num):
             parms_str = Constant.TAB + dis_assembly_list[PC][1]
         if operator == 'J' or operator == 'JR':
             use_parms = USE_PARM_DICT['r']
-        elif operator == 'BGTZ' or operator == 'BGTZ':
+        elif operator == 'BLTZ' or operator == 'BGTZ':
             use_parms = USE_PARM_DICT['r,offset']
         elif operator in OPERATOR_DICT:
             use_parms = USE_PARM_DICT['rd,rs,rt']
