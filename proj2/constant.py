@@ -109,3 +109,4 @@ Constant.BRANCH_INST = ['J', 'JR', 'BEQ', 'BGTZ', 'BLTZ']
 Const.ISSUE_MAX_COUNT = 2
 # function operands dict
 Const.FU_OP_DICT = {'MEM': ['SW', 'LW'], 'ALUB': ['SLL', 'SRL', 'SRA', 'MUL'], 'ALU': ['DEFAULT']}
+

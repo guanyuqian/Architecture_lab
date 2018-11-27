@@ -8,35 +8,42 @@ PC = 0
 data_pc = 0
 R = [0] * 32
 register_result_status = [None] * 32
-previous_cycle_status = {}
 is_break = False
 # {FU name:{FU status}}
 FU_list = {}
+synchronize_buffer = {
+    'pre_issue': {'val': [], 'add_val': [], 'del_val': []},
+    'pre_mem': {'val': [], 'add_val': [], 'del_val': []},
+    'pre_alu': {'val': [], 'add_val': [], 'del_val': []},
+    'pre_alub': {'val': [], 'add_val': [], 'del_val': []},
+    'post_mem': {'val': [], 'add_val': [], 'del_val': []},
+    'post_alu': {'val': [], 'add_val': [], 'del_val': []},
+    'post_alub': {'val': [], 'add_val': [], 'del_val': []}
+}
+pre_issue = synchronize_buffer['pre_issue']['val']
+add_pre_issue = synchronize_buffer['pre_issue']['add_val']
+del_pre_issue = synchronize_buffer['pre_issue']['del_val']
+
+wait_inst = None
+exec_inst = None
 
 
-def store_previous_cycle_status(pre_issue):
-    global previous_cycle_status
-    previous_cycle_status['pre_issue'] = pre_issue
-    previous_cycle_status['wait_inst'] = wait_inst
-    previous_cycle_status['exec_inst'] = exec_inst
-
-
+def update_data():
+    global synchronize_buffer
+    for buffer in synchronize_buffer:
+        buffer['val']=list(set(buffer['val']).union( buffer['add_val']).difference(set(buffer['del_val'])))
+        buffer['add_val'].clear()
+        buffer['del_val'].clear()
 def simulate(dis_assembly_list, mem_line_num):
-    global memory
-    global data_pc
+    global memory, data_pc
     memory = dis_assembly_list
     data_pc = mem_line_num
-
-    pre_issue = []
-    wait_inst = None
-    exec_inst = None
+    FU_list_init()
     while True:
-        instruction_fetch(pre_issue, wait_inst)
-        print(pre_issue)
-        print(wait_inst)
-        print(exec_inst)
-        print('end_event.set')
-        store_previous_cycle_status()
+        instruction_fetch()
+        issue()
+        execution()
+        update_data()
     # IF_begin_event = threading.Event()
     # IF_end_event = threading.Event()
     # IF_thread = threading.Thread(target=instruction_fetch_thread, args=(IF_begin_event, IF_end_event))
@@ -72,55 +79,88 @@ def simulate(dis_assembly_list, mem_line_num):
 #         end_event.set()
 #
 
-def instruction_fetch(pre_issue, wait_inst):
-    global is_break
-    global PC
-    exec_inst = None
-    IF_left_count = Constant.IF_MAX_COUNT
+def instruction_fetch():
+    global pre_issue, is_break, PC, wait_inst, exec_inst
+    left_slot=Constant.PRE_ISSUE_SIZE-len(pre_issue)
+    # 可以添加的数是2或者上周期剩余的slot
+    IF_left_count =(Constant.IF_MAX_COUNT, left_slot)[Constant.IF_MAX_COUNT>left_slot]
     while IF_left_count > 0:
         if wait_inst is not None:
-            execute_branch(wait_inst, wait_inst, exec_inst)
-        elif len(previous_cycle_status['pre_issue']) < Constant.PRE_ISSUE_SIZE:
+            execute_branch(wait_inst)
+        else :
             inst = memory[int(PC)]
             PC += 1
             operator = inst[0]
             if operator in Constant.BRANCH_INST:
-                execute_branch(inst, wait_inst, exec_inst)
+                execute_branch(inst)
             else:
                 if operator in ['Break', 'Nop']:
                     is_break = operator == 'Break'
                 else:
-                    pre_issue.append(inst)
+                    add_pre_issue.append(inst)
                 IF_left_count = IF_left_count - 1
-        else:
-            break
-    return pre_issue, wait_inst, exec_inst
+    exec_inst = None
 
 
-def issue(pre_issue):
+def issue():
+    global pre_issue
     issue_left_count = Constant.ISSUE_MAX_COUNT
-    for inst in pre_issue:
-        if issue_left_count > 0:
-            break
-        operands = inst_register_all_ready(inst)
+    mem_stall = False
+    i = 0
+    while i < len(pre_issue) and issue_left_count > 0:
+        inst = pre_issue[i]
+        FU_name = get_FU_name(inst)
+        if not mem_stall and FU_pre_queue_is_useful_in_previous_cycle(FU_name) \
+                and is_register_all_ready_in_previous_cycle(inst) and not mem_stall:
+            add_pre_FU_queue(FU_name, inst)
+            del_pre_issue.append(pre_issue[i])
+            set_register_status_2_FU_name(inst, FU_name)
+            issue_left_count -= 1
+        else:
+            mem_stall = (inst[0] == 'LW' | 'SW')
+            i += 1
+
+
+def execution():
+    for FU_name, FU in FU_list.items():
+        print (FU_name, ' value : ', FU)
+        FU['pre_FU_buffer']['val'].clear()
+
+
+#   初始化功能单元
+def FU_list_init():
+    global FU_list
+    FU_Names = ['ALU', 'ALUB', 'MEM']
+    FU_list = {
+        'ALU': {'pre_FU_buffer': synchronize_buffer['pre_alu'], 'pre_FU_queue_size': 2, 'post_FU_buffer': synchronize_buffer['post_alu'], 'FU_cycle_cost': 1, 'FU_cycle': 0},
+        'ALUB': {'pre_FU_buffer': synchronize_buffer['pre_alub'], 'pre_FU_queue_size': 2, 'post_FU_buffer': synchronize_buffer['post_alu'], 'FU_cycle_cost': 2, 'FU_cycle': 0},
+        'MEM': {'pre_FU_buffer': synchronize_buffer['pre_mem'], 'pre_FU_queue_size': 2, 'post_FU_buffer': synchronize_buffer['post_alu'], 'FU_cycle_cost': 1, 'FU_cycle': 0}
+    }
+
+
+# 将指令加入FU_name 的pre_FU队列
+def add_pre_FU_queue(FU_name, inst):
+    FU_list[FU_name]['pre_FU_buffer']['add_val'].append(inst)
+
+
+# 获取inst对应的FU
+def get_FU_name(inst):
+    dict = Constant.FU_OP_DICT
+    for FU_name in dict:
+        if inst[0] in dict[FU_name]:
+            return dict[FU_name]
+    return 'ALU'
 
 
 # 操作符对应的FU再上一个周期还有没有位置
-def busy(operands):
-    dict = Constant.FU_OP_DICT
-    for FU_name in dict.iterkeys():
-        if operands in dict[FU_name]:
-            pre_FU_queue_is_not_full(FU_name)
-
-
-# 这个队列是否满再上个周期
-def pre_FU_queue_is_not_full(FU_name):
-    FU_name = previous_cycle_status['FU_list'][FU_name]
-    return len(FU['pre_FU_queue']) < FU['pre_FU_size']
+def FU_pre_queue_is_useful_in_previous_cycle(FU_name):
+    FU = FU_list[FU_name]
+    return len(FU['pre_FU_buffer']['val']) < FU['pre_FU_queue_size']
 
 
 # 指令需要的所以寄存器都准备好了吗[operator,operands]
-def inst_register_all_ready(inst):
+def is_register_all_ready_in_previous_cycle(inst):
+    global register_result_status
     register_id_list = inst[1].split('#')[0].replace('R', '').split(Constant.DIVIDE)
     print(register_id_list)
     for register_id in register_id_list:
@@ -130,8 +170,20 @@ def inst_register_all_ready(inst):
     return True
 
 
-def execute_branch(inst, wait_inst, exec_inst):
-    if inst_register_all_ready(inst):
+# 从指令中取出第一个寄存器，将他的状态设为FU_name
+def set_register_status_2_FU_name(inst, FU_name):
+    rid = get_dest_register_id(inst)
+    R[rid] = FU_name
+
+
+# 获取目标寄存器ID 即第一个寄存器ID
+def get_dest_register_id(inst):
+    return int(inst[1].split(Constant.DIVIDE)[0].replace('R', ''))
+
+
+def execute_branch(inst):
+    global wait_inst, exec_inst
+    if is_register_all_ready_in_previous_cycle(inst):
         exec_inst = inst
         wait_inst = None
         execute_inst(inst)
