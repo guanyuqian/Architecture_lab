@@ -1,14 +1,24 @@
 import threading
 
-import constant as  Constant
+import constant as Constant
+import copy
 
 memory = []
 PC = 0
 data_pc = 0
 R = [0] * 32
 register_result_status = [None] * 32
-
+previous_cycle_status = {}
 is_break = False
+# {FU name:{FU status}}
+FU_list = {}
+
+
+def store_previous_cycle_status(pre_issue):
+    global previous_cycle_status
+    previous_cycle_status['pre_issue'] = pre_issue
+    previous_cycle_status['wait_inst'] = wait_inst
+    previous_cycle_status['exec_inst'] = exec_inst
 
 
 def simulate(dis_assembly_list, mem_line_num):
@@ -21,11 +31,12 @@ def simulate(dis_assembly_list, mem_line_num):
     wait_inst = None
     exec_inst = None
     while True:
-        instruction_fetch(pre_issue, wait_inst, exec_inst)
+        instruction_fetch(pre_issue, wait_inst)
         print(pre_issue)
         print(wait_inst)
         print(exec_inst)
         print('end_event.set')
+        store_previous_cycle_status()
     # IF_begin_event = threading.Event()
     # IF_end_event = threading.Event()
     # IF_thread = threading.Thread(target=instruction_fetch_thread, args=(IF_begin_event, IF_end_event))
@@ -41,26 +52,27 @@ def simulate(dis_assembly_list, mem_line_num):
     #         thread['end_event'].wait()
 
 
-def instruction_fetch_thread(begin_event, end_event):
-    pre_issue = []
-    wait_inst = None
-    exec_inst = None
-    print('in instruction_fetch_thread')
+#
+# def instruction_fetch_thread(begin_event, end_event):
+#     pre_issue = []
+#     wait_inst = None
+#     exec_inst = None
+#     print('in instruction_fetch_thread')
+#
+#     while True:
+#         if is_break:
+#             break
+#         print(' event.wait()')
+#         begin_event.wait()
+#         instruction_fetch(pre_issue, wait_inst)
+#         print(pre_issue)
+#         print(wait_inst)
+#         print(exec_inst)
+#         print('end_event.set')
+#         end_event.set()
+#
 
-    while True:
-        if is_break:
-            break
-        print(' event.wait()')
-        begin_event.wait()
-        instruction_fetch(pre_issue, wait_inst, exec_inst)
-        print(pre_issue)
-        print(wait_inst)
-        print(exec_inst)
-        print('end_event.set')
-        end_event.set()
-
-
-def instruction_fetch(pre_issue, wait_inst, exec_inst):
+def instruction_fetch(pre_issue, wait_inst):
     global is_break
     global PC
     exec_inst = None
@@ -68,7 +80,7 @@ def instruction_fetch(pre_issue, wait_inst, exec_inst):
     while IF_left_count > 0:
         if wait_inst is not None:
             execute_branch(wait_inst, wait_inst, exec_inst)
-        elif len(pre_issue) < Constant.PRE_ISSUE_SIZE:
+        elif len(previous_cycle_status['pre_issue']) < Constant.PRE_ISSUE_SIZE:
             inst = memory[int(PC)]
             PC += 1
             operator = inst[0]
@@ -82,6 +94,29 @@ def instruction_fetch(pre_issue, wait_inst, exec_inst):
                 IF_left_count = IF_left_count - 1
         else:
             break
+    return pre_issue, wait_inst, exec_inst
+
+
+def issue(pre_issue):
+    issue_left_count = Constant.ISSUE_MAX_COUNT
+    for inst in pre_issue:
+        if issue_left_count > 0:
+            break
+        operands = inst_register_all_ready(inst)
+
+
+# 操作符对应的FU再上一个周期还有没有位置
+def busy(operands):
+    dict = Constant.FU_OP_DICT
+    for FU_name in dict.iterkeys():
+        if operands in dict[FU_name]:
+            pre_FU_queue_is_not_full(FU_name)
+
+
+# 这个队列是否满再上个周期
+def pre_FU_queue_is_not_full(FU_name):
+    FU_name = previous_cycle_status['FU_list'][FU_name]
+    return len(FU['pre_FU_queue']) < FU['pre_FU_size']
 
 
 # 指令需要的所以寄存器都准备好了吗[operator,operands]
@@ -144,7 +179,7 @@ def execute_inst(inst):
         print('不识别操作')
     glo = globals()
     exec_str = Constant.OPERATOR_DICT[inst[0]]
-    exec(get_exec_str(exec_str, use_parms, parms), glo)
+    exec (get_exec_str(exec_str, use_parms, parms), glo)
 
 
 if __name__ == "__main__":

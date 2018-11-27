@@ -1,7 +1,6 @@
 ﻿# coding=utf-8
 
 
-
 class Const:
     class ConstError(TypeError):
         pass
@@ -104,6 +103,9 @@ Constant.USE_PARM_DICT = {
 # Constant.SLR=SLR
 
 # project2
-Constant.IF_MAX_COUNT=2
-Constant.PRE_ISSUE_SIZE=4
-Constant.BRANCH_INST=['J','JR','BEQ','BGTZ','BLTZ']
+Constant.IF_MAX_COUNT = 2
+Constant.PRE_ISSUE_SIZE = 4
+Constant.BRANCH_INST = ['J', 'JR', 'BEQ', 'BGTZ', 'BLTZ']
+Const.ISSUE_MAX_COUNT = 2
+# function operands dict
+Const.FU_OP_DICT = {'MEM': ['SW', 'LW'], 'ALUB': ['SLL', 'SRL', 'SRA', 'MUL'], 'ALU': ['DEFAULT']}
