@@ -118,3 +118,4 @@ def device_machine_code(machine_code):
 # 判断是否存在此操作码
 def machine_code2register(machine_code):
     return 'R' + str(int(machine_code, 2))
+

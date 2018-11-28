@@ -54,16 +54,16 @@ Constant.OPERATOR_DICT = {
     'AND': 'rd=int(rs)&int(rt)', 'NOR': 'rd=~(int(rs)|int(rt))',
     'SLT': 'rd = (int(rs) < int(rt))',
     'SLL': 'rd=SLL(rs,rt)',
-    'SLR': 'rd=SLR(rs,rt)',
+    'SRL': 'rd=SRL(rs,rt)',
     'SRA': 'rd=int(rs)>>int(rt)',
     'NOP': '', 'BREAK': '',
     # 保留原来PC的最高四位
     'J': 'PC =int((int(PC) & int(1006632960)) +(r-64)/4)', 'JR': 'PC =(r-64)/4',
     'BEQ': 'if rd==rs : PC += int(rt/4)',
-    'BGTZ': 'if(r>0):PC +=int(offset/4)',
-    'BLTZ': 'if(r<0):PC +=int(offset/4)',
-    'LW': 'rd=dis_assembly_list[int((rs+rt-64)/4)]',
-    'SW': 'dis_assembly_list[int((rs+rt-64)/4)]=int(rd)'
+    'BGTZ': 'if(int(r)>0):PC +=int(offset/4)',
+    'BLTZ': 'if(int(r)<0):PC +=int(offset/4)',
+    'LW': 'rd=memory[int((rs+rt-64)/4)]',
+    'SW': 'memory[int((rs+rt-64)/4)]=int(rd)'
 }
 
 # 汇编指令使用参数的情况
@@ -72,35 +72,35 @@ Constant.USE_PARM_DICT = {
     'r': ['r'],
     'r,offset': ['r', 'offset']
 }
-#
-#
-# def SLR(rs, rt):
-#     sa = int(rt)
-#     rs = int(rs)
-#     if rs < 0:
-#         if sa > 31:
-#             return '00000000000000000000000000000000'
-#         from disassembly import int2complement_code_32bits
-#         complement_code = int2complement_code_32bits(rs)
-#         return int('0' * sa + complement_code[:-sa], 2)
-#         pass
-#     else:
-#         return rs >> sa
-#
-#
-# def SLL(rs, rt):
-#     sa = int(rt)
-#     rs = int(rs)
-#     if sa > 31:
-#         return '00000000000000000000000000000000'
-#     from disassembly import int2complement_code_32bits
-#     complement_code = int2complement_code_32bits(rs)
-#     if complement_code[sa] == '1':
-#         return -1 * int(complement_code[sa + 1:] + '0' * sa, 2)
-#     else:
-#         return int(complement_code[sa + 1:] + '0' * sa, 2)
-# Constant.SLL=SLL
-# Constant.SLR=SLR
+
+
+def SRL(rs, rt):
+    sa = int(rt)
+    rs = int(rs)
+    if rs < 0:
+        if sa > 31:
+            return '00000000000000000000000000000000'
+        from disassembly import int2complement_code_32bits
+        complement_code = int2complement_code_32bits(rs)
+        return int('0' * sa + complement_code[:-sa], 2)
+        pass
+    else:
+        return rs >> sa
+
+
+def SLL(rs, rt):
+    sa = int(rt)
+    rs = int(rs)
+    if sa > 31:
+        return '00000000000000000000000000000000'
+    from disassembly import int2complement_code_32bits
+    complement_code = int2complement_code_32bits(rs)
+    if complement_code[sa] == '1':
+        return -1 * int(complement_code[sa + 1:] + '0' * sa, 2)
+    else:
+        return int(complement_code[sa + 1:] + '0' * sa, 2)
+Constant.SLL=SLL
+Constant.SRL=SRL
 
 # project2
 Constant.IF_MAX_COUNT = 2
