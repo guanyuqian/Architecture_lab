@@ -1,8 +1,8 @@
-import threading
 
 import constant as Constant
-import copy
-
+# breaak
+# memory 顺序
+# 多线程
 SLL = Constant.SLL
 SRL = Constant.SRL
 cycle = 0
@@ -14,15 +14,22 @@ issued_register_list = []
 is_break = False
 # {FU name:{FU status}}
 FU_list = {}
+# val: 周期开始时buffer，
+# add_val:周期结束前会添加的buffer,
+# del_val:周期结束前会删除的buffer,
+# del_valout_put_name :用于输出
+# buffer_size buffer的大小
 synchronize_buffer = {
-    'pre_issue': {'val': [], 'add_val': [], 'del_val': []},
-    'pre_mem': {'val': [], 'add_val': [], 'del_val': []},
-    'pre_alu': {'val': [], 'add_val': [], 'del_val': []},
-    'pre_alub': {'val': [], 'add_val': [], 'del_val': []},
-    'post_mem': {'val': [], 'add_val': [], 'del_val': []},
-    'post_alu': {'val': [], 'add_val': [], 'del_val': []},
-    'post_alub': {'val': [], 'add_val': [], 'del_val': []}
+    'pre_issue': {'val': [], 'add_val': [], 'del_val': [], 'output_name': 'Pre-Issue Buffer:', 'buffer_size': 4},
+    'pre_alu': {'val': [], 'add_val': [], 'del_val': [], 'output_name': 'Pre-ALU Queue:', 'buffer_size': 2},
+    'post_alu': {'val': [], 'add_val': [], 'del_val': [], 'output_name': 'Post-ALU Buffer:', 'buffer_size': 1},
+    'pre_alub': {'val': [], 'add_val': [], 'del_val': [], 'output_name': 'Pre-ALUB Queue:', 'buffer_size': 2},
+    'post_alub': {'val': [], 'add_val': [], 'del_val': [], 'output_name': 'Post-ALUB Buffer:', 'buffer_size': 1},
+    'pre_mem': {'val': [], 'add_val': [], 'del_val': [], 'output_name': 'Pre-MEM Queue:', 'buffer_size': 2},
+    'post_mem': {'val': [], 'add_val': [], 'del_val': [], 'output_name': 'Post-MEM Buffer:', 'buffer_size': 1}
+
 }
+
 post_buffer_name = ['post_mem', 'post_alu', 'post_alub']
 # 没有目标寄存器的指令
 inst_no_dest_register = ['BREAK', 'NOP', 'SW']
@@ -33,38 +40,74 @@ exec_inst = None
 # 更新周期中删掉和添加，buffer
 def update_data():
     global synchronize_buffer, exec_inst
-    output()
     for key, buffer in synchronize_buffer.items():
-        # 将目标寄存器回复可读写
-        if key in post_buffer_name and len(buffer['del_val']) and get_dest_register_str(buffer['del_val'][0]) != None:
+        # 如果FU是post_buffer且post_buffer不为空且指令有目标寄存器
+        # 将对应的目标寄存器回复可读写
+        if key in post_buffer_name and len(buffer['del_val']) and \
+                get_dest_register_str(buffer['del_val'][0]) != None:
             issued_register_list.remove(get_dest_register_str(buffer['del_val'][0]))
+        # 删除buffer中的待删除元素，在周期末尾
         buffer['val'] = [inst for inst in buffer['val'] if inst not in buffer['del_val']]
+        # 添加buffer中的待添加元素，在周期末尾
         buffer['val'].extend(buffer['add_val'])
         buffer['add_val'].clear()
         buffer['del_val'].clear()
 
-        print(key)
-        dump(buffer['val'])
-    exec_inst = None
-
-
-import pprint
 
 
 def output():
     global cycle
     cycle += 1
-    print(str(cycle) + '===========================================================')
-    print('IF Unit:')
-    print('wait_inst:', end='')
-    print (wait_inst)
-    print('exec_inst:', end='')
-    print(exec_inst)
+    print('--------------------')
+    print('Cycle:' + str(cycle))
+    print('\nIF Unit:')
+    print('	Waiting Instruction: ' + inst2str(wait_inst))
+    print('	Executed Instruction: ' + inst2str(exec_inst))
+
+    for key, buffer in synchronize_buffer.items():
+        print(buffer['output_name'],end='')
+        if buffer['buffer_size'] <= 1 and len(buffer['val']) != 0:
+            print(inst2str(buffer['val'][0],True))
+        else:
+            print()
+            if buffer['buffer_size'] > 1:
+                for i in range(buffer['buffer_size']):
+                    if i < len(buffer['val']):
+                        print(('	Entry %d:' + inst2str(buffer['val'][i],True) )% i)
+                    else:
+                        print('	Entry %d:'% i)
+
+    print('\nRegisters')
+    print('R00:	'+'	'.join(map(str, R[0:8])))
+    print('R08:	'+'	'.join(map(str, R[8:16])))
+    print('R16:	'+'	'.join(map(str, R[16:24])))
+    print('R24:	'+'	'.join(map(str, R[24:32])))
+
+    print(data2str())
+
+def data2str():
+    global data_pc,memory
+    result = '\nData\n'
+    length = len(memory)
+    line_index = 0
+    tmp_data_pc=data_pc
+    while tmp_data_pc < length:
+        result += str(tmp_data_pc * 4 + 64) + ':	'
+        while tmp_data_pc < length and line_index < Constant.LINE_DATA_COUNT:
+            result += str(memory[tmp_data_pc]) + Constant.TAB
+            line_index += 1
+            tmp_data_pc += 1
+        result = result[:-1] + '\n'
+        line_index = 0
+    result = result[:-1]
+    return result
 
 
-def dump(dic):
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(dic)
+
+# bracket 中括号是否添加
+def inst2str(inst, bracket=False):
+    result = '	'.join(inst) if inst != None else ''
+    return result if not bracket else '[' + result + ']'
 
 
 def simulate(dis_assembly_list, mem_line_num):
@@ -72,16 +115,18 @@ def simulate(dis_assembly_list, mem_line_num):
     memory = dis_assembly_list
     data_pc = mem_line_num
     FU_list_init()
-    while True:
+    while not is_break:
         instruction_fetch()
         issue()
         execution()
         write_back()
         update_data()
+        output()
 
 
 def instruction_fetch():
     global is_break, PC, wait_inst, exec_inst
+    exec_inst = None
     pre_issue = synchronize_buffer['pre_issue']['val']
     add_pre_issue = synchronize_buffer['pre_issue']['add_val']
     left_slot = Constant.PRE_ISSUE_SIZE - len(pre_issue)
@@ -101,6 +146,7 @@ def instruction_fetch():
             else:
                 if operator in ['BREAK', 'NOP']:
                     is_break = operator == 'BREAK'
+                    exec_inst=inst[:1]
                 else:
                     add_pre_issue.append(inst)
                 IF_left_count = IF_left_count - 1
@@ -114,14 +160,13 @@ def issue():
     i = 0
     # 之前没有issue的指令 防止war waw
     pre_no_issue_inst_list = []
-    if cycle == 25:
-        print ("")
     while i < len(pre_issue) and issue_left_count > 0:
         inst = pre_issue[i]
         FU_name = get_FU_name(inst)
-        if mem_stall and (inst[0] == 'LW' or inst[0] == 'SW'):
-            pass
-        elif FU_pre_queue_is_useful_in_previous_cycle(FU_name) \
+
+        # if mem_stall and (inst[0] == 'LW' or inst[0] == 'SW'):
+        #     pass
+        if Fu_pre_buffer_useful_count(FU_name) \
                 and no_write_after_write_and_read(inst, pre_no_issue_inst_list):
             add_pre_FU_queue(FU_name, inst)
             del_pre_issue.append(pre_issue[i])
@@ -131,32 +176,42 @@ def issue():
             issue_left_count -= 1
         else:
             pre_no_issue_inst_list.append(inst)
-            mem_stall = (inst[0] == 'LW' or inst[0] == 'SW')
+            #mem_stall = (inst[0] == 'LW' or inst[0] == 'SW')
         i += 1
 
 
 def execution():
+    global  cycle
+    if cycle > 39:
+        pass
     for FU_name, FU in FU_list.items():
         # print (FU_name, ' value : ', FU)
         pre_FU_buffer = FU['pre_FU_buffer']
         post_FU_buffer = FU['post_FU_buffer']
-        FU['FU_cycle'] += 1
+        if len(pre_FU_buffer['val']):
+            FU['FU_cycle'] += 1
         if FU['FU_cycle'] >= FU['FU_cycle_cost']:
             FU['FU_cycle'] = 0
             if len(pre_FU_buffer['val']):
-                inst=pre_FU_buffer['val'][0]
-                execute_inst(inst)
-                pre_FU_buffer['del_val'] = [inst]
+                inst = pre_FU_buffer['val'][0]
+                # 不立即更新寄存器，模拟周期
+                # execute_inst(inst)
+                pre_FU_buffer['del_val'].append(inst)
                 if pre_FU_buffer['val'][0][0] != 'SW':
-                    post_FU_buffer['add_val'] = [inst]
+                    post_FU_buffer['add_val'].append(inst)
+                # 'SW' 指令在此就立即写回内存
+                else:
+                    execute_inst_immediately(inst)
 
 
 def write_back():
     for FU_name, FU in FU_list.items():
         # print (FU_name, ' value : ', FU)
         post_FU_buffer = FU['post_FU_buffer']
+        # 如果post_FU_buffer中有待写会指令就立即执行
         if len(post_FU_buffer['val']):
-            post_FU_buffer['del_val'] = [post_FU_buffer['val'][0]]
+            post_FU_buffer['del_val'] .append(post_FU_buffer['val'][0])
+            execute_inst_immediately(post_FU_buffer['val'][0])
 
 
 #   初始化功能单元
@@ -187,10 +242,10 @@ def get_FU_name(inst):
     return 'ALU'
 
 
-# 操作符对应的FU再上一个周期还有没有位置
-def FU_pre_queue_is_useful_in_previous_cycle(FU_name):
+# 操作符对应的FU再上一个周期还有多少位置
+def Fu_pre_buffer_useful_count(FU_name):
     FU = FU_list[FU_name]
-    return len(FU['pre_FU_buffer']['val']) < FU['pre_FU_queue_size']
+    return FU['pre_FU_queue_size']-len(FU['pre_FU_buffer']['val'])-len(FU['pre_FU_buffer']['add_val'])
 
 
 # 对war 和waw进行判断
@@ -242,7 +297,7 @@ def execute_branch(inst):
     if no_write_after_write_and_read(inst, pre_issue):
         exec_inst = inst
         wait_inst = None
-        execute_inst(inst)
+        execute_inst_immediately(inst)
     else:
         wait_inst = inst
     return
@@ -261,7 +316,7 @@ def get_exec_str(code, old_parm_list, new_parm_list):
 # 把指令后面的参数分开，并格式化变量对应的字符串 R0 -> R[0] | #12->12
 def change_code2parm_str_list(inst):
     code = inst[1]
-    if code=='':
+    if code == '':
         return []
     parms = code.replace('(', Constant.DIVIDE).replace(')', '').replace('#', '').split(Constant.DIVIDE)
     i = 0
@@ -274,7 +329,7 @@ def change_code2parm_str_list(inst):
 
 
 # 执行指令 branch操作 ：（读取寄存的值）更新PC
-def execute_inst(inst):
+def execute_inst_immediately(inst):
     operator = inst[0]
     parms = []
     if inst[1] != '':
@@ -289,10 +344,7 @@ def execute_inst(inst):
         print('不识别操作')
     glo = globals()
     exec_str = get_exec_str(Constant.OPERATOR_DICT[inst[0]], use_parms, parms)
-
-    exec (exec_str, glo)
-    pass
-
+    exec(exec_str, glo)
 
 if __name__ == "__main__":
     str_set = inst_list2str_set([['SLL', 'R16, R1, #2'], ['SLR', 'R16, R1, #2']])
