@@ -106,7 +106,10 @@ Constant.SRL=SRL
 Constant.IF_MAX_COUNT = 2
 Constant.PRE_ISSUE_SIZE = 4
 Constant.BRANCH_INST = ['J', 'JR', 'BEQ', 'BGTZ', 'BLTZ']
-Const.ISSUE_MAX_COUNT = 2
+Constant.ISSUE_MAX_COUNT = 2
 # function operands dict
-Const.FU_OP_DICT = {'MEM': ['SW', 'LW'], 'ALUB': ['SLL', 'SRL', 'SRA', 'MUL'], 'ALU': ['DEFAULT']}
+Constant.FU_OP_DICT = {'MEM': ['SW', 'LW'], 'ALUB': ['SLL', 'SRL', 'SRA', 'MUL'], 'ALU': ['DEFAULT']}
 
+Constant.POST_BUFFER_NAME=['post_mem', 'post_alu', 'post_alub']
+# 没有目标寄存器的指令
+Constant.INST_NO_DEST_REGISTER = ['BREAK', 'NOP', 'SW']

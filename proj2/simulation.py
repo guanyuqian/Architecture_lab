@@ -1,7 +1,6 @@
-
+import threading
 import constant as Constant
 
-# 多线程
 # doc中对于load store 中store在load前面的情况没有考虑
 SLL = Constant.SLL
 SRL = Constant.SRL
@@ -27,87 +26,10 @@ synchronize_buffer = {
     'post_alub': {'val': [], 'add_val': [], 'del_val': [], 'output_name': 'Post-ALUB Buffer:', 'buffer_size': 1},
     'pre_mem': {'val': [], 'add_val': [], 'del_val': [], 'output_name': 'Pre-MEM Queue:', 'buffer_size': 2},
     'post_mem': {'val': [], 'add_val': [], 'del_val': [], 'output_name': 'Post-MEM Buffer:', 'buffer_size': 1}
-
 }
-
-post_buffer_name = ['post_mem', 'post_alu', 'post_alub']
-# 没有目标寄存器的指令
-inst_no_dest_register = ['BREAK', 'NOP', 'SW']
 wait_inst = None
 exec_inst = None
-
-
-# 更新周期中删掉和添加，buffer
-def update_data():
-    global synchronize_buffer, exec_inst
-    for key, buffer in synchronize_buffer.items():
-        # 如果FU是post_buffer且post_buffer不为空且指令有目标寄存器
-        # 将对应的目标寄存器回复可读写
-        if key in post_buffer_name and len(buffer['del_val']) and \
-                get_dest_register_str(buffer['del_val'][0]) != None:
-            issued_register_list.remove(get_dest_register_str(buffer['del_val'][0]))
-        # 删除buffer中的待删除元素，在周期末尾
-        buffer['val'] = [inst for inst in buffer['val'] if inst not in buffer['del_val']]
-        # 添加buffer中的待添加元素，在周期末尾
-        buffer['val'].extend(buffer['add_val'])
-        buffer['add_val'].clear()
-        buffer['del_val'].clear()
-
-
-
-def output():
-    global cycle
-    cycle += 1
-    print('--------------------')
-    print('Cycle:' + str(cycle))
-    print('\nIF Unit:')
-    print('	Waiting Instruction: ' + inst2str(wait_inst))
-    print('	Executed Instruction: ' + inst2str(exec_inst))
-
-    for key, buffer in synchronize_buffer.items():
-        print(buffer['output_name'],end='')
-        if buffer['buffer_size'] <= 1 and len(buffer['val']) != 0:
-            print(inst2str(buffer['val'][0],True))
-        else:
-            print()
-            if buffer['buffer_size'] > 1:
-                for i in range(buffer['buffer_size']):
-                    if i < len(buffer['val']):
-                        print(('	Entry %d:' + inst2str(buffer['val'][i],True) )% i)
-                    else:
-                        print('	Entry %d:'% i)
-
-    print('\nRegisters')
-    print('R00:	'+'	'.join(map(str, R[0:8])))
-    print('R08:	'+'	'.join(map(str, R[8:16])))
-    print('R16:	'+'	'.join(map(str, R[16:24])))
-    print('R24:	'+'	'.join(map(str, R[24:32])))
-
-    print(data2str())
-
-def data2str():
-    global data_pc,memory
-    result = '\nData\n'
-    length = len(memory)
-    line_index = 0
-    tmp_data_pc=data_pc
-    while tmp_data_pc < length:
-        result += str(tmp_data_pc * 4 + 64) + ':	'
-        while tmp_data_pc < length and line_index < Constant.LINE_DATA_COUNT:
-            result += str(memory[tmp_data_pc]) + Constant.TAB
-            line_index += 1
-            tmp_data_pc += 1
-        result = result[:-1] + '\n'
-        line_index = 0
-    result = result[:-1]
-    return result
-
-
-
-# bracket 中括号是否添加
-def inst2str(inst, bracket=False):
-    result = '	'.join(inst) if inst != None else ''
-    return result if not bracket else '[' + result + ']'
+output_result=[]
 
 
 def simulate(dis_assembly_list, mem_line_num):
@@ -116,12 +38,19 @@ def simulate(dis_assembly_list, mem_line_num):
     data_pc = mem_line_num
     FU_list_init()
     while not is_break:
-        instruction_fetch()
-        issue()
-        execution()
-        write_back()
+        pipeline_thread(instruction_fetch)
+        pipeline_thread(issue)
+        pipeline_thread(execution)
+        pipeline_thread(write_back)
         update_data()
         output()
+    return '\n'.join(output_result)+'\n'
+
+
+def pipeline_thread(function):
+    thread = threading.Thread(target=function, name='LoopThread')
+    thread.start()
+    thread.join()
 
 
 def instruction_fetch():
@@ -175,6 +104,78 @@ def issue():
             pre_no_issue_inst_list.append(inst)
         i += 1
 
+
+# 更新周期中删掉和添加，buffer
+def update_data():
+    global synchronize_buffer, exec_inst
+    for key, buffer in synchronize_buffer.items():
+        # 如果FU是post_buffer且post_buffer不为空且指令有目标寄存器
+        # 将对应的目标寄存器回复可读写
+        if key in Constant.POST_BUFFER_NAME and len(buffer['del_val']) and \
+                get_dest_register_str(buffer['del_val'][0]) != None:
+            issued_register_list.remove(get_dest_register_str(buffer['del_val'][0]))
+        # 删除buffer中的待删除元素，在周期末尾
+        buffer['val'] = [inst for inst in buffer['val'] if inst not in buffer['del_val']]
+        # 添加buffer中的待添加元素，在周期末尾
+        buffer['val'].extend(buffer['add_val'])
+        buffer['add_val'].clear()
+        buffer['del_val'].clear()
+
+
+
+def output():
+    global cycle,output_result
+    cycle += 1
+    output_result.append('--------------------')
+    output_result.append('Cycle:' + str(cycle))
+    output_result.append('\nIF Unit:')
+    output_result.append('	Waiting Instruction: ' + inst2str(wait_inst))
+    output_result.append('	Executed Instruction: ' + inst2str(exec_inst))
+
+    for key, buffer in synchronize_buffer.items():
+        if buffer['buffer_size'] <= 1 and len(buffer['val']) != 0:
+            output_result.append(buffer['output_name']+inst2str(buffer['val'][0],True))
+        else:
+            output_result.append(buffer['output_name'])
+            if buffer['buffer_size'] > 1:
+                for i in range(buffer['buffer_size']):
+                    if i < len(buffer['val']):
+                        output_result.append(('	Entry %d:' + inst2str(buffer['val'][i],True) )% i)
+                    else:
+                        output_result.append('	Entry %d:'% i)
+
+    output_result.append('\nRegisters')
+    output_result.append('R00:	'+'	'.join(map(str, R[0:8])))
+    output_result.append('R08:	'+'	'.join(map(str, R[8:16])))
+    output_result.append('R16:	'+'	'.join(map(str, R[16:24])))
+    output_result.append('R24:	'+'	'.join(map(str, R[24:32])))
+    output_result.append(data2str())
+
+def data2str():
+    global data_pc,memory
+    result = '\nData\n'
+    length = len(memory)
+    line_index = 0
+    tmp_data_pc=data_pc
+    while tmp_data_pc < length:
+        result += str(tmp_data_pc * 4 + 64) + ':	'
+        while tmp_data_pc < length and line_index < Constant.LINE_DATA_COUNT:
+            result += str(memory[tmp_data_pc]) + Constant.TAB
+            line_index += 1
+            tmp_data_pc += 1
+        result = result[:-1] + '\n'
+        line_index = 0
+    result = result[:-1]
+    return result
+
+
+
+# bracket 中括号是否添加
+def inst2str(inst, bracket=False):
+    result = '	'.join(inst) if inst != None else ''
+    return result if not bracket else '[' + result + ']'
+
+
 #  The load instruction must wait until all the previous stores are issued.
 #  The stores must be issued in order.
 # if and only if current inst is memory inst and exit 'SW' inst previously
@@ -190,7 +191,6 @@ def execution():
     if cycle > 39:
         pass
     for FU_name, FU in FU_list.items():
-        # print (FU_name, ' value : ', FU)
         pre_FU_buffer = FU['pre_FU_buffer']
         post_FU_buffer = FU['post_FU_buffer']
         if len(pre_FU_buffer['val']):
@@ -211,7 +211,6 @@ def execution():
 
 def write_back():
     for FU_name, FU in FU_list.items():
-        # print (FU_name, ' value : ', FU)
         post_FU_buffer = FU['post_FU_buffer']
         # 如果post_FU_buffer中有待写会指令就立即执行
         if len(post_FU_buffer['val']):
@@ -285,7 +284,7 @@ def register_no_busy(inst):
 
 # 获取目标寄存器
 def get_dest_register_str(inst):
-    if inst[0] in inst_no_dest_register:
+    if inst[0] in Constant.INST_NO_DEST_REGISTER:
         return None
     return change_code2parm_str_list(inst)[0]
 
