@@ -29,7 +29,7 @@ synchronize_buffer = {
 }
 wait_inst = None
 exec_inst = None
-output_result=[]
+output_result = []
 
 
 def simulate(dis_assembly_list, mem_line_num):
@@ -44,13 +44,7 @@ def simulate(dis_assembly_list, mem_line_num):
         pipeline_thread(write_back)
         update_data()
         output()
-    return '\n'.join(output_result)+'\n'
-
-
-def pipeline_thread(function):
-    thread = threading.Thread(target=function, name='LoopThread')
-    thread.start()
-    thread.join()
+    return '\n'.join(output_result) + '\n'
 
 
 def instruction_fetch():
@@ -75,7 +69,7 @@ def instruction_fetch():
             else:
                 if operator in ['BREAK', 'NOP']:
                     is_break = operator == 'BREAK'
-                    exec_inst=inst[:1]
+                    exec_inst = inst[:1]
                 else:
                     add_pre_issue.append(inst)
                 IF_left_count = IF_left_count - 1
@@ -91,8 +85,8 @@ def issue():
     while i < len(pre_issue) and issue_left_count > 0:
         inst = pre_issue[i]
         FU_name = get_FU_name(inst)
-
-        if Fu_pre_buffer_useful_count(FU_name) and mem_in_order(inst,pre_no_issue_inst_list)\
+        if Fu_pre_buffer_useful_count(FU_name) \
+                and mem_in_order(inst, pre_no_issue_inst_list) \
                 and no_write_after_write_and_read(inst, pre_no_issue_inst_list):
             add_pre_FU_queue(FU_name, inst)
             del_pre_issue.append(pre_issue[i])
@@ -105,89 +99,8 @@ def issue():
         i += 1
 
 
-# 更新周期中删掉和添加，buffer
-def update_data():
-    global synchronize_buffer, exec_inst
-    for key, buffer in synchronize_buffer.items():
-        # 如果FU是post_buffer且post_buffer不为空且指令有目标寄存器
-        # 将对应的目标寄存器回复可读写
-        if key in Constant.POST_BUFFER_NAME and len(buffer['del_val']) and \
-                get_dest_register_str(buffer['del_val'][0]) != None:
-            issued_register_list.remove(get_dest_register_str(buffer['del_val'][0]))
-        # 删除buffer中的待删除元素，在周期末尾
-        buffer['val'] = [inst for inst in buffer['val'] if inst not in buffer['del_val']]
-        # 添加buffer中的待添加元素，在周期末尾
-        buffer['val'].extend(buffer['add_val'])
-        buffer['add_val'].clear()
-        buffer['del_val'].clear()
-
-
-
-def output():
-    global cycle,output_result
-    cycle += 1
-    output_result.append('--------------------')
-    output_result.append('Cycle:' + str(cycle))
-    output_result.append('\nIF Unit:')
-    output_result.append('	Waiting Instruction: ' + inst2str(wait_inst))
-    output_result.append('	Executed Instruction: ' + inst2str(exec_inst))
-
-    for key, buffer in synchronize_buffer.items():
-        if buffer['buffer_size'] <= 1 and len(buffer['val']) != 0:
-            output_result.append(buffer['output_name']+inst2str(buffer['val'][0],True))
-        else:
-            output_result.append(buffer['output_name'])
-            if buffer['buffer_size'] > 1:
-                for i in range(buffer['buffer_size']):
-                    if i < len(buffer['val']):
-                        output_result.append(('	Entry %d:' + inst2str(buffer['val'][i],True) )% i)
-                    else:
-                        output_result.append('	Entry %d:'% i)
-
-    output_result.append('\nRegisters')
-    output_result.append('R00:	'+'	'.join(map(str, R[0:8])))
-    output_result.append('R08:	'+'	'.join(map(str, R[8:16])))
-    output_result.append('R16:	'+'	'.join(map(str, R[16:24])))
-    output_result.append('R24:	'+'	'.join(map(str, R[24:32])))
-    output_result.append(data2str())
-
-def data2str():
-    global data_pc,memory
-    result = '\nData\n'
-    length = len(memory)
-    line_index = 0
-    tmp_data_pc=data_pc
-    while tmp_data_pc < length:
-        result += str(tmp_data_pc * 4 + 64) + ':	'
-        while tmp_data_pc < length and line_index < Constant.LINE_DATA_COUNT:
-            result += str(memory[tmp_data_pc]) + Constant.TAB
-            line_index += 1
-            tmp_data_pc += 1
-        result = result[:-1] + '\n'
-        line_index = 0
-    result = result[:-1]
-    return result
-
-
-
-# bracket 中括号是否添加
-def inst2str(inst, bracket=False):
-    result = '	'.join(inst) if inst != None else ''
-    return result if not bracket else '[' + result + ']'
-
-
-#  The load instruction must wait until all the previous stores are issued.
-#  The stores must be issued in order.
-# if and only if current inst is memory inst and exit 'SW' inst previously
-def mem_in_order(inst,pre_no_issue_inst_list):
-    operator=inst[0]
-    if (operator=='SW' or operator =='LW')\
-        and len([v for v in pre_no_issue_inst_list if v[0]=='SW']):
-        return False
-    return True
-
 def execution():
-    global  cycle
+    global cycle
     if cycle > 39:
         pass
     for FU_name, FU in FU_list.items():
@@ -214,8 +127,98 @@ def write_back():
         post_FU_buffer = FU['post_FU_buffer']
         # 如果post_FU_buffer中有待写会指令就立即执行
         if len(post_FU_buffer['val']):
-            post_FU_buffer['del_val'] .append(post_FU_buffer['val'][0])
+            post_FU_buffer['del_val'].append(post_FU_buffer['val'][0])
             execute_inst_immediately(post_FU_buffer['val'][0])
+
+
+# 更新周期中删掉和添加，buffer
+def update_data():
+    global synchronize_buffer, exec_inst
+    for key, buffer in synchronize_buffer.items():
+        # 如果FU是post_buffer且post_buffer不为空且指令有目标寄存器
+        # 将对应的目标寄存器回复可读写
+        if key in Constant.POST_BUFFER_NAME and len(buffer['del_val']) and \
+                get_dest_register_str(buffer['del_val'][0]) != None:
+            issued_register_list.remove(get_dest_register_str(buffer['del_val'][0]))
+        # 删除buffer中的待删除元素，在周期末尾
+        buffer['val'] = [inst for inst in buffer['val'] if inst not in buffer['del_val']]
+        # 添加buffer中的待添加元素，在周期末尾
+        buffer['val'].extend(buffer['add_val'])
+        buffer['add_val'].clear()
+        buffer['del_val'].clear()
+
+
+# 格式化输出
+def output():
+    global cycle, output_result, wait_inst, exec_inst
+    cycle += 1
+    output_result.append('--------------------')
+    output_result.append('Cycle:' + str(cycle))
+    output_result.append('\nIF Unit:')
+    output_result.append('	Waiting Instruction: ' + inst2str(wait_inst))
+    output_result.append('	Executed Instruction: ' + inst2str(exec_inst))
+
+    for key, buffer in synchronize_buffer.items():
+        if buffer['buffer_size'] <= 1 and len(buffer['val']) != 0:
+            output_result.append(buffer['output_name'] + inst2str(buffer['val'][0], True))
+        else:
+            output_result.append(buffer['output_name'])
+            if buffer['buffer_size'] > 1:
+                for i in range(buffer['buffer_size']):
+                    if i < len(buffer['val']):
+                        output_result.append(('	Entry %d:' + inst2str(buffer['val'][i], True)) % i)
+                    else:
+                        output_result.append('	Entry %d:' % i)
+
+    output_result.append('\nRegisters')
+    output_result.append('R00:	' + '	'.join(map(str, R[0:8])))
+    output_result.append('R08:	' + '	'.join(map(str, R[8:16])))
+    output_result.append('R16:	' + '	'.join(map(str, R[16:24])))
+    output_result.append('R24:	' + '	'.join(map(str, R[24:32])))
+    output_result.append(data2str())
+
+
+# 并行线程开启
+def pipeline_thread(unit):
+    thread = threading.Thread(target=unit, name='LoopThread')
+    thread.start()
+    thread.join()
+
+
+# 把内存里的数据变成格式化字符串输出
+def data2str():
+    global data_pc, memory
+    result = '\nData\n'
+    length = len(memory)
+    line_index = 0
+    tmp_data_pc = data_pc
+    while tmp_data_pc < length:
+        result += str(tmp_data_pc * 4 + 64) + ':	'
+        while tmp_data_pc < length and line_index < Constant.LINE_DATA_COUNT:
+            result += str(memory[tmp_data_pc]) + Constant.TAB
+            line_index += 1
+            tmp_data_pc += 1
+        result = result[:-1] + '\n'
+        line_index = 0
+    result = result[:-1]
+    return result
+
+
+# bracket 中括号是否添加
+def inst2str(inst, bracket=False):
+    result = '	'.join(inst) if inst != None else ''
+    return result if not bracket else '[' + result + ']'
+
+
+#  The load instruction must wait until all the previous stores are issued.
+#  The stores must be issued in order.
+# if and only if current inst is memory inst and exit 'SW' inst previously
+def mem_in_order(inst, pre_no_issue_inst_list):
+    operator = inst[0]
+    if (operator == 'SW' or operator == 'LW') \
+            and len([v for v in pre_no_issue_inst_list if v[0] == 'SW']):
+        return False
+    return True
 
 
 #   初始化功能单元
@@ -249,7 +252,7 @@ def get_FU_name(inst):
 # 操作符对应的FU再上一个周期还有多少位置,是否还有坑
 def Fu_pre_buffer_useful_count(FU_name):
     FU = FU_list[FU_name]
-    return FU['pre_FU_queue_size']-len(FU['pre_FU_buffer']['val'])-len(FU['pre_FU_buffer']['add_val'])
+    return FU['pre_FU_queue_size'] - len(FU['pre_FU_buffer']['val']) - len(FU['pre_FU_buffer']['add_val'])
 
 
 # 对war 和waw进行判断
@@ -269,16 +272,15 @@ def no_write_after_write_and_read(inst, pre_no_issue_inst_list):
         # 自己的目标寄存器不能是pre_stall_inst的寄存器
         if dest_register in pre_register_list:
             return False
-
     return True
 
 
+# 判断指令中的寄存器没有正在被写入
 def register_no_busy(inst):
     global issued_register_list
     register_list = get_all_register_str(inst)
     if len(set(register_list) & set(issued_register_list)) != 0:
         return False
-
     return True
 
 
@@ -289,12 +291,14 @@ def get_dest_register_str(inst):
     return change_code2parm_str_list(inst)[0]
 
 
+# 获取所有指令中寄存器的字符串集合
 def get_all_register_str(inst):
     parameters = change_code2parm_str_list(inst)
     register_list = [v for v in parameters if not str(v).isdigit()]
     return register_list
 
 
+# 判断是否执行分支跳转语句，如果是立即执行
 def execute_branch(inst):
     global wait_inst, exec_inst
     pre_issue = synchronize_buffer['pre_issue']['val']
@@ -336,6 +340,7 @@ def change_code2parm_str_list(inst):
 def execute_inst_immediately(inst):
     operator = inst[0]
     parms = []
+    use_parms = []
     if inst[1] != '':
         parms = change_code2parm_str_list(inst)
     if operator == 'J' or operator == 'JR':
@@ -349,8 +354,3 @@ def execute_inst_immediately(inst):
     glo = globals()
     exec_str = get_exec_str(Constant.OPERATOR_DICT[inst[0]], use_parms, parms)
     exec(exec_str, glo)
-
-if __name__ == "__main__":
-    str_set = inst_list2str_set([['SLL', 'R16, R1, #2'], ['SLR', 'R16, R1, #2']])
-    str_list = str_set2inst_list(str_set)
-    pass

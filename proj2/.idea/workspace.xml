@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="45eef27c-9198-47c8-b5f5-5488ceaa38c7" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/constant.py" beforeDir="false" afterPath="$PROJECT_DIR$/constant.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/disassembly_int.txt" beforeDir="false" afterPath="$PROJECT_DIR$/disassembly_int.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample_int.txt" beforeDir="false" afterPath="$PROJECT_DIR$/sample_int.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/simulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/simulation_int.txt" beforeDir="false" afterPath="$PROJECT_DIR$/simulation_int.txt" afterDir="false" />
     </list>
@@ -15,7 +15,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/proj2$main.coverage" NAME="main Coverage Results" MODIFIED="1543480906399" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/proj2$main.coverage" NAME="main Coverage Results" MODIFIED="1543481743239" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/proj2$simulation.coverage" NAME="simulation Coverage Results" MODIFIED="1543424445806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="DatabaseView">
@@ -74,25 +74,25 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="245" />
-          <entry key="py" value="6470" />
-          <entry key="txt" value="40" />
+          <entry key="py" value="6648" />
+          <entry key="txt" value="73" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="PLAIN_TEXT" value="40" />
-          <entry key="Python" value="6715" />
+          <entry key="PLAIN_TEXT" value="73" />
+          <entry key="Python" value="6893" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="py" value="2" />
-          <entry key="txt" value="8" />
+          <entry key="txt" value="9" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="PLAIN_TEXT" value="8" />
+          <entry key="PLAIN_TEXT" value="9" />
           <entry key="Python" value="2" />
         </counts>
       </usages-collector>
@@ -133,15 +133,16 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/simulation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="50">
-              <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+            <state relative-caret-position="375">
+              <caret line="45" selection-start-line="45" selection-end-line="45" />
               <folding>
                 <element signature="e#0#16#0" expanded="true" />
-                <marker date="1543480945222" expanded="true" signature="1740:1780" ph="..." />
-                <marker date="1543480945222" expanded="true" signature="6601:6773" ph="..." />
+                <element signature="e#5696#5956#0" />
+                <marker date="1543481413585" expanded="true" signature="1647:1648" ph="..." />
+                <marker date="1543481413585" expanded="true" signature="7795:7979" ph="..." />
               </folding>
             </state>
           </provider>
@@ -157,24 +158,37 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/doc/disassembly.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="150">
+              <caret line="6" column="58" lean-forward="true" selection-start-line="6" selection-start-column="58" selection-end-line="6" selection-end-column="58" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sample_int.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="280">
-              <caret line="14" column="32" lean-forward="true" selection-end-line="48" selection-end-column="32" />
+            <state relative-caret-position="25">
+              <caret line="7" column="14" selection-start-line="7" selection-start-column="14" selection-end-line="7" selection-end-column="14" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/disassembly_int.txt">
-          <provider selected="true" editor-type-id="text-editor" />
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="9" column="9" selection-start-line="9" selection-start-column="9" selection-end-line="9" selection-end-column="9" />
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/simulation_int.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="325">
-              <caret line="13" column="12" lean-forward="true" selection-end-line="7820" />
+            <state relative-caret-position="277">
+              <caret line="488" column="21" selection-start-line="488" selection-start-column="21" selection-end-line="488" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -188,20 +202,10 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="484">
-              <caret line="1653" selection-start-line="1653" selection-end-line="1653" />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>IF_left_count</find>
       <find>register_no_busy</find>
       <find>issued_register_list</find>
       <find>PC</find>
@@ -231,6 +235,7 @@
       <find>Const</find>
       <find>print</find>
       <find>output_result</find>
+      <find>LW</find>
     </findStrings>
     <replaceStrings>
       <replace>NOP</replace>
@@ -247,9 +252,9 @@
         <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/disassembly.py" />
         <option value="$PROJECT_DIR$/doc/sample.txt" />
-        <option value="$PROJECT_DIR$/sample_int.txt" />
         <option value="$PROJECT_DIR$/constant.py" />
         <option value="$PROJECT_DIR$/simulation.py" />
+        <option value="$PROJECT_DIR$/sample_int.txt" />
       </list>
     </option>
   </component>
@@ -409,7 +414,14 @@
       <option name="project" value="LOCAL" />
       <updated>1543477844447</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="完成多线程并行，输出格式化文件">
+      <created>1543480964046</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1543480964046</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -473,10 +485,18 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="剩下多线程，内存的执行顺序没完成，代码未重构" />
     <MESSAGE value="剩下多线程，内存顺序检测完成，代码未重构" />
-    <option name="LAST_COMMIT_MESSAGE" value="剩下多线程，内存顺序检测完成，代码未重构" />
+    <MESSAGE value="完成多线程并行，输出格式化文件" />
+    <option name="LAST_COMMIT_MESSAGE" value="完成多线程并行，输出格式化文件" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/simulation.py</url>
+          <line>45</line>
+          <option name="timeStamp" value="139" />
+        </line-breakpoint>
+      </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
@@ -500,11 +520,27 @@
         <watch expression="synchronize_buffer" language="Python" />
         <watch expression="exec_inst" language="Python" />
         <watch expression="wait_inst" language="Python" />
+        <watch expression="'\n'.join(output_result)" language="Python" />
       </configuration>
     </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="watch">
+      <expression>
+        <expression-string>'\n'.join(output_result)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>&lt;class 'list'&gt;: &lt;Too big to print. Len: 448&gt;</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>output_result</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>wait_inst</expression-string>
         <language-id>Python</language-id>
@@ -540,21 +576,6 @@
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
-      <expression>
-        <expression-string>glo['R[1]']</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>exec_str</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>FU_list</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
     </expressions>
     <expressions id="evaluateExpression">
       <expression>
@@ -586,20 +607,6 @@
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python35/Lib/threading.py" />
-    <entry file="file://$PROJECT_DIR$/doc/disassembly.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="21" column="44" selection-start-line="21" selection-start-column="44" selection-end-line="21" selection-end-column="59" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/doc/sample.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="9" column="32" lean-forward="true" selection-end-line="48" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="484">
@@ -614,30 +621,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/disassembly.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3025">
-          <caret line="121" selection-start-line="121" selection-end-line="121" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sample_int.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="14" column="32" lean-forward="true" selection-end-line="48" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/disassembly_int.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/doc/simulation.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4240">
-          <caret line="1125" column="8" lean-forward="true" selection-start-line="1125" selection-start-column="8" selection-end-line="1125" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="266">
@@ -648,22 +631,65 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/doc/sample.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="9" column="32" lean-forward="true" selection-end-line="48" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/disassembly.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3025">
+          <caret line="121" selection-start-line="121" selection-end-line="121" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/disassembly_int.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="9" column="9" selection-start-line="9" selection-start-column="9" selection-end-line="9" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc/disassembly.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="6" column="58" lean-forward="true" selection-start-line="6" selection-start-column="58" selection-end-line="6" selection-end-column="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/doc/simulation.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4240">
+          <caret line="1125" column="8" lean-forward="true" selection-start-line="1125" selection-start-column="8" selection-end-line="1125" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/simulation_int.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="325">
-          <caret line="13" column="12" lean-forward="true" selection-end-line="7820" />
+        <state relative-caret-position="277">
+          <caret line="488" column="21" selection-start-line="488" selection-start-column="21" selection-end-line="488" selection-end-column="22" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/simulation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="50">
-          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+        <state relative-caret-position="375">
+          <caret line="45" selection-start-line="45" selection-end-line="45" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
-            <marker date="1543480945222" expanded="true" signature="1740:1780" ph="..." />
-            <marker date="1543480945222" expanded="true" signature="6601:6773" ph="..." />
+            <element signature="e#5696#5956#0" />
+            <marker date="1543481413585" expanded="true" signature="1647:1648" ph="..." />
+            <marker date="1543481413585" expanded="true" signature="7795:7979" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sample_int.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="25">
+          <caret line="7" column="14" selection-start-line="7" selection-start-column="14" selection-end-line="7" selection-end-column="14" />
         </state>
       </provider>
     </entry>
