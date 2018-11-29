@@ -1,8 +1,8 @@
 
 import constant as Constant
-# breaak
-# memory 顺序
+
 # 多线程
+# doc中对于load store 中store在load前面的情况没有考虑
 SLL = Constant.SLL
 SRL = Constant.SRL
 cycle = 0
@@ -156,7 +156,6 @@ def issue():
     pre_issue = synchronize_buffer['pre_issue']['val']
     del_pre_issue = synchronize_buffer['pre_issue']['del_val']
     issue_left_count = Constant.ISSUE_MAX_COUNT
-    mem_stall = False
     i = 0
     # 之前没有issue的指令 防止war waw
     pre_no_issue_inst_list = []
@@ -164,9 +163,7 @@ def issue():
         inst = pre_issue[i]
         FU_name = get_FU_name(inst)
 
-        # if mem_stall and (inst[0] == 'LW' or inst[0] == 'SW'):
-        #     pass
-        if Fu_pre_buffer_useful_count(FU_name) \
+        if Fu_pre_buffer_useful_count(FU_name) and mem_in_order(inst,pre_no_issue_inst_list)\
                 and no_write_after_write_and_read(inst, pre_no_issue_inst_list):
             add_pre_FU_queue(FU_name, inst)
             del_pre_issue.append(pre_issue[i])
@@ -176,9 +173,17 @@ def issue():
             issue_left_count -= 1
         else:
             pre_no_issue_inst_list.append(inst)
-            #mem_stall = (inst[0] == 'LW' or inst[0] == 'SW')
         i += 1
 
+#  The load instruction must wait until all the previous stores are issued.
+#  The stores must be issued in order.
+# if and only if current inst is memory inst and exit 'SW' inst previously
+def mem_in_order(inst,pre_no_issue_inst_list):
+    operator=inst[0]
+    if (operator=='SW' or operator =='LW')\
+        and len([v for v in pre_no_issue_inst_list if v[0]=='SW']):
+        return False
+    return True
 
 def execution():
     global  cycle
@@ -242,7 +247,7 @@ def get_FU_name(inst):
     return 'ALU'
 
 
-# 操作符对应的FU再上一个周期还有多少位置
+# 操作符对应的FU再上一个周期还有多少位置,是否还有坑
 def Fu_pre_buffer_useful_count(FU_name):
     FU = FU_list[FU_name]
     return FU['pre_FU_queue_size']-len(FU['pre_FU_buffer']['val'])-len(FU['pre_FU_buffer']['add_val'])
