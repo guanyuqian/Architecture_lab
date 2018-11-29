@@ -8,7 +8,7 @@ Python3.5以上
 
 ===========================
 
-##proj1
+## proj1
 
 ### 项目简介
 ```
@@ -21,7 +21,7 @@ Implement a MIPS simulator that can perform the following steps:
 * 项目目录   ：[guanyuqian/**Architecture_lab**/proj1](https://github.com/guanyuqian/Architecture_lab/tree/master/proj1)
 
 
-##proj2
+## proj2
 
 ### 项目简介
 ```
@@ -32,3 +32,6 @@ Implement a MIPS simulator that can perform the following steps:
 * GIT地址    ：https://github.com/guanyuqian/Architecture_lab.git
 * 项目目录   ：[guanyuqian/**Architecture_lab**/proj2](https://github.com/guanyuqian/Architecture_lab/tree/master/proj2)
 
+### PS
+- 本项目实现并行处理IF，ISSUE，EXE，WB四个过程
+- doc未要求store命令要在load后执行，但这是必要的，不然会有内存读写错误
