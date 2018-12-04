@@ -13,6 +13,7 @@ issued_register_list = []
 is_break = False
 # {FU name:{FU status}}
 FU_list = {}
+bufferkey=['pre_issue','pre_alu','post_alu','pre_alub','post_alub','pre_mem','post_mem']
 # val: 周期开始时buffer，
 # add_val:周期结束前会添加的buffer,
 # del_val:周期结束前会删除的buffer,
@@ -66,12 +67,12 @@ def instruction_fetch():
             if operator in Constant.BRANCH_INST:
                 execute_branch(inst)
                 IF_left_count = 0
+            elif operator in ['BREAK', 'NOP']:
+                is_break = operator == 'BREAK'
+                exec_inst = inst[:1]
+                IF_left_count = 0
             else:
-                if operator in ['BREAK', 'NOP']:
-                    is_break = operator == 'BREAK'
-                    exec_inst = inst[:1]
-                else:
-                    add_pre_issue.append(inst)
+                add_pre_issue.append(inst)
                 IF_left_count = IF_left_count - 1
 
 
@@ -158,7 +159,8 @@ def output():
     output_result.append('	Waiting Instruction: ' + inst2str(wait_inst))
     output_result.append('	Executed Instruction: ' + inst2str(exec_inst))
 
-    for key, buffer in synchronize_buffer.items():
+    for key in bufferkey:
+        buffer=synchronize_buffer[key]
         if buffer['buffer_size'] <= 1 and len(buffer['val']) != 0:
             output_result.append(buffer['output_name'] + inst2str(buffer['val'][0], True))
         else:
