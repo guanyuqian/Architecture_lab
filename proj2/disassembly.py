@@ -27,15 +27,15 @@ def dis_assembly(sample_file):
                 mem_line_num += 1
                 dis_assembly_txt_operator, dis_assembly_txt_seg, break_line_num = dis_assembly_code(line, line_num)
                 dis_assembly_list.append([dis_assembly_txt_operator, dis_assembly_txt_seg])
-                if dis_assembly_txt_operator== 'BREAK' or dis_assembly_txt_operator== 'NOP':
-                    space=''
+                if dis_assembly_txt_operator == 'BREAK' or dis_assembly_txt_operator == 'NOP':
+                    space = ''
                 dis_assembly_txt += device_machine_code(line) + Constant.TAB + \
                                     str(line_num * Constant.CODE_BYTES + Constant.BASE_PC) + Constant.TAB + \
                                     dis_assembly_txt_operator + space + dis_assembly_txt_seg + Constant.WRAP
             else:
-                val = complement_code2int(line,32)
+                val = complement_code2int(line, 32)
                 dis_assembly_list.append(val)
-                dis_assembly_txt += line[:-1] + str(line_num * Constant.CODE_BYTES + Constant.BASE_PC) + \
+                dis_assembly_txt += line[:-1] + Constant.TAB + str(line_num * Constant.CODE_BYTES + Constant.BASE_PC) + \
                                     Constant.TAB + val + Constant.WRAP
     file.close()
     return dis_assembly_txt, dis_assembly_list, mem_line_num
@@ -63,7 +63,7 @@ def dis_assembly_code(machine_code, line_num):
                                     '#' + str(complement_code2int(machine_code[16:32] + '00', 16))
         elif operator == 'SW' or operator == 'LW':
             dis_assembly_txt_seg += machine_code2register(machine_code[11:16]) + Constant.DIVIDE + \
-                                    str(complement_code2int(machine_code[16:32] , 16)) + \
+                                    str(complement_code2int(machine_code[16:32], 16)) + \
                                     '(' + machine_code2register(machine_code[6:11]) + ')'
         elif operator == 'BEQ':
             dis_assembly_txt_seg += machine_code2register(machine_code[6:11]) + Constant.DIVIDE + \
@@ -72,7 +72,7 @@ def dis_assembly_code(machine_code, line_num):
         else:
             dis_assembly_txt_seg += machine_code2register(machine_code[11:16]) + Constant.DIVIDE + \
                                     machine_code2register(machine_code[6:11]) + Constant.DIVIDE \
-                                    + '#' +  str(complement_code2int(machine_code[16:32] , 16))
+                                    + '#' + str(complement_code2int(machine_code[16:32], 16))
     else:
         function_code = machine_code[:6] + machine_code[26:32]
         if function_code not in Constant.FUNCTION_CODE_DICT:
@@ -96,17 +96,18 @@ def dis_assembly_code(machine_code, line_num):
 # 负数转为32位补码
 def int2complement_code_32bits(rs):
     binary_code = bin(rs)
-    if rs<0:
+    if rs < 0:
         supplement_count = 32 - len(binary_code) + 3
         return '1' * supplement_count + binary_code[3:]
     else:
         supplement_count = 32 - len(binary_code) + 2
         return '0' * supplement_count + binary_code[2:]
 
+
 # 补码转换成整数 complement_code,digits几位的
-def complement_code2int(complement_code,digits):
+def complement_code2int(complement_code, digits):
     tmp = int(complement_code[1:], 2)
-    return str((tmp, tmp - pow(2,digits-1))[int(complement_code[0])])
+    return str((tmp, tmp - pow(2, digits - 1))[int(complement_code[0])])
 
 
 # 把32位机器码分割成 6|5|5|5|5|6
@@ -118,4 +119,3 @@ def device_machine_code(machine_code):
 # 判断是否存在此操作码
 def machine_code2register(machine_code):
     return 'R' + str(int(machine_code, 2))
-
