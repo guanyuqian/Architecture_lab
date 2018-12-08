@@ -71,11 +71,9 @@ def instruction_fetch():
                 is_break = 1
                 exec_inst = inst[:1]
                 IF_left_count = 0
-            elif operator == 'NOP':
-                exec_inst = inst[:1]
-                IF_left_count -= 1
             else:
-                add_pre_issue.append(inst)
+                if operator != 'NOP':
+                    add_pre_issue.append(inst)
                 IF_left_count -= 1
 
 
